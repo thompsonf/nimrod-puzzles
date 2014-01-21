@@ -29,7 +29,7 @@ proc getPuzzle(fname: string): string =
   let puzzStr = readFile(fname)
   return puzzStr
 
-proc seqStrToStr(inSeq: seq[string]): string =
+proc `$` (inSeq: seq[string]): string =
   result = "["
   for i in countup(0, len(inSeq) - 2):
     result &= inSeq[i]
@@ -37,16 +37,16 @@ proc seqStrToStr(inSeq: seq[string]): string =
   result &= inSeq[len(inSeq) - 1]
   result &= "]"
 
-proc seqSeqStrToStr(inSeq: seq[seq[string]]): string =
+proc `$` (inSeq: seq[seq[string]]): string =
   result = "[\n "
   for i in countup(0, len(inseq) - 2):
-    result &= seqStrToStr(inSeq[i])
+    result &= $inSeq[i]
     result &= ",\n "
-  result &= seqStrToStr(inSeq[len(inSeq) - 1])
+  result &= $inSeq[len(inSeq) - 1]
   result &= "\n]"
 
 let digits = "123456789"
-let rows = "ABCEDFGHI"
+let rows = "ABCDEFGHI"
 let cols = digits
 let squares = cross(rows, cols)
 
@@ -62,9 +62,9 @@ for rs in ["ABC", "DEF", "GHI"]:
     unitlist.add(cross(rs, cs))
 
 # Initialize units
-var units = initTable[string, seq[string]]()
+var units = initTable[string, seq[seq[string]]]()
 for s in squares:
-  var entry: seq[string] = @[]
+  var entry: seq[seq[string]] = @[]
   for unit in unitlist:
     if s in unit:
       entry.add(unit)
@@ -80,7 +80,8 @@ for s in squares:
 #       echo unit
 #   peers[s] = entry
 
-echo seqSeqStrToStr(@[@["1", "2", "3"],@["a", "bc", "de"]])
+echo unitlist
+echo units["C2"]
 
 # A set of unit tests
 proc test() =
@@ -92,7 +93,11 @@ proc test() =
   var assertvar = true
   for s in squares:
     assertvar = assertvar and len(units[s]) == 3
-  #assert assertvar
+  assert assertvar
+  # Units of C2
+  assert units["C2"] == @[@["A2", "B2", "C2", "D2", "E2", "F2", "G2", "H2", "I2"],
+                          @["C1", "C2", "C3", "C4", "C5", "C6", "C7", "C8", "C9"],
+                          @["A1", "A2", "A3", "B1", "B2", "B3", "C1", "C2", "C3"]]
 
 
 
